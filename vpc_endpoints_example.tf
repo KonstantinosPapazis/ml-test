@@ -90,11 +90,9 @@ resource "aws_vpc_endpoint" "sagemaker_api" {
   service_name        = "com.amazonaws.${var.aws_region}.sagemaker.api"
   vpc_endpoint_type   = "Interface"
   
-  # Deploy in the same subnets as your SageMaker notebook
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  # If vpc_endpoint_subnet_ids is not specified, use the notebook subnet
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -118,10 +116,8 @@ resource "aws_vpc_endpoint" "sagemaker_runtime" {
   service_name        = "com.amazonaws.${var.aws_region}.sagemaker.runtime"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -145,10 +141,8 @@ resource "aws_vpc_endpoint" "ec2" {
   service_name        = "com.amazonaws.${var.aws_region}.ec2"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -172,10 +166,8 @@ resource "aws_vpc_endpoint" "logs" {
   service_name        = "com.amazonaws.${var.aws_region}.logs"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -199,10 +191,8 @@ resource "aws_vpc_endpoint" "ecr_api" {
   service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -226,10 +216,8 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -253,10 +241,8 @@ resource "aws_vpc_endpoint" "sts" {
   service_name        = "com.amazonaws.${var.aws_region}.sts"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
@@ -282,10 +268,8 @@ resource "aws_vpc_endpoint" "kms" {
   service_name        = "com.amazonaws.${var.aws_region}.kms"
   vpc_endpoint_type   = "Interface"
   
-  subnet_ids = [
-    var.subnet_id,
-    # Add additional subnet IDs for high availability
-  ]
+  # Use multiple subnets across AZs for high availability
+  subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
   
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true

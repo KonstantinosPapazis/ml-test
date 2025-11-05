@@ -1,0 +1,36 @@
+# Minimal Configuration for Public Git Repositories Only
+# This configuration includes only what's needed to clone public repos from GitHub/GitLab
+
+# AWS Configuration
+aws_region   = "us-east-1"
+project_name = "my-ml-project"
+environment  = "dev"
+
+# SageMaker Notebook Configuration
+instance_type = "ml.t3.medium"
+volume_size   = 10
+
+# Network Configuration (REQUIRED)
+vpc_id         = "vpc-xxxxxxxxx"
+subnet_id      = "subnet-xxxxxxxxx"  # Private subnet
+vpc_cidr_block = "10.0.0.0/16"
+
+# S3 Access
+s3_bucket_arns = [
+  "arn:aws:s3:::my-ml-data-bucket"
+]
+
+# Git Configuration - Minimal for Public Repos
+enable_git_access             = false  # No CodeCommit needed for public repos
+enable_secrets_manager_access = false  # No credentials needed for public repos
+enable_git_ssh                = false  # HTTPS is sufficient for public repos
+
+# The security group will still allow HTTPS (443) egress for Git operations
+# This is all you need for public repositories!
+
+# Optional: Auto-clone public repositories on notebook start
+default_code_repository = "https://github.com/username/public-repo"
+additional_code_repositories = [
+  # "https://github.com/username/another-public-repo"
+]
+

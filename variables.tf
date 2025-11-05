@@ -70,8 +70,14 @@ variable "vpc_id" {
 }
 
 variable "subnet_id" {
-  description = "Subnet ID for the notebook instance (should be private subnet)"
+  description = "Subnet ID for the notebook instance (should be private subnet). Note: SageMaker notebooks only support a single subnet."
   type        = string
+}
+
+variable "vpc_endpoint_subnet_ids" {
+  description = "List of subnet IDs for VPC endpoints (recommended: use multiple subnets across AZs for high availability)"
+  type        = list(string)
+  default     = []
 }
 
 variable "additional_security_group_ids" {
@@ -170,6 +176,43 @@ variable "s3_bucket_arns" {
   description = "S3 bucket ARNs that the notebook instance needs access to"
   type        = list(string)
   default     = []
+}
+
+variable "ecr_repository_arns" {
+  description = "ECR repository ARNs that the notebook needs push access to (use null for all repositories in the account)"
+  type        = list(string)
+  default     = null
+}
+
+# Git Access Configuration
+variable "enable_git_access" {
+  description = "Whether to enable Git/CodeCommit access for the notebook instance"
+  type        = bool
+  default     = true
+}
+
+variable "codecommit_repository_arns" {
+  description = "CodeCommit repository ARNs that the notebook needs access to (use null for all repositories)"
+  type        = list(string)
+  default     = null
+}
+
+variable "enable_secrets_manager_access" {
+  description = "Whether to enable Secrets Manager access for Git credentials"
+  type        = bool
+  default     = true
+}
+
+variable "secrets_manager_secret_arns" {
+  description = "Secrets Manager secret ARNs for Git credentials (use null for secrets matching *git* and *sagemaker*)"
+  type        = list(string)
+  default     = null
+}
+
+variable "enable_git_ssh" {
+  description = "Whether to enable SSH access for Git operations (port 22)"
+  type        = bool
+  default     = false
 }
 
 variable "kms_key_id" {

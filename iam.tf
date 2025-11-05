@@ -169,14 +169,27 @@ resource "aws_iam_role_policy" "ecr_access" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken",
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
           "ecr:DescribeRepositories",
-          "ecr:ListImages"
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:CreateRepository",
+          "ecr:TagResource"
         ]
-        Resource = "*"
+        Resource = var.ecr_repository_arns != null ? var.ecr_repository_arns : ["arn:aws:ecr:${var.aws_region}:*:repository/*"]
       }
     ]
   })
@@ -207,6 +220,59 @@ resource "aws_iam_role_policy" "vpc_access" {
           "ec2:ModifyNetworkInterfaceAttribute"
         ]
         Resource = "*"
+      }
+    ]
+  })
+}
+
+# Inline policy for Git/CodeCommit access
+resource "aws_iam_role_policy" "git_access" {
+  count = var.create_iam_role && var.enable_git_access ? 1 : 0
+
+  name = "${var.project_name}-${var.environment}-sagemaker-git-access"
+  role = aws_iam_role.sagemaker_notebook[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "codecommit:GitPull",
+          "codecommit:GitPush",
+          "codecommit:GetBranch",
+          "codecommit:GetCommit",
+          "codecommit:ListBranches",
+          "codecommit:ListRepositories",
+          "codecommit:GetRepository",
+          "codecommit:CreateBranch"
+        ]
+        Resource = var.codecommit_repository_arns != null ? var.codecommit_repository_arns : ["*"]
+      }
+    ]
+  })
+}
+
+# Inline policy for Secrets Manager access (for Git credentials)
+resource "aws_iam_role_policy" "secrets_manager_access" {
+  count = var.create_iam_role && var.enable_secrets_manager_access ? 1 : 0
+
+  name = "${var.project_name}-${var.environment}-sagemaker-secrets-access"
+  role = aws_iam_role.sagemaker_notebook[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = var.secrets_manager_secret_arns != null ? var.secrets_manager_secret_arns : [
+          "arn:aws:secretsmanager:${var.aws_region}:*:secret:*git*",
+          "arn:aws:secretsmanager:${var.aws_region}:*:secret:*sagemaker*"
+        ]
       }
     ]
   })

@@ -81,6 +81,31 @@ resource "aws_vpc_security_group_egress_rule" "ntp" {
   cidr_ipv4   = "0.0.0.0/0"
 }
 
+# Egress rule: Git operations (HTTPS/SSH)
+resource "aws_vpc_security_group_egress_rule" "git_https" {
+  count = var.create_security_group && var.enable_git_access ? 1 : 0
+
+  security_group_id = aws_security_group.sagemaker_notebook[0].id
+  description       = "Allow HTTPS for Git operations (GitHub, GitLab, etc.)"
+
+  ip_protocol = "tcp"
+  from_port   = 443
+  to_port     = 443
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "git_ssh" {
+  count = var.create_security_group && var.enable_git_access && var.enable_git_ssh ? 1 : 0
+
+  security_group_id = aws_security_group.sagemaker_notebook[0].id
+  description       = "Allow SSH for Git operations"
+
+  ip_protocol = "tcp"
+  from_port   = 22
+  to_port     = 22
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
 # Egress rule: Allow outbound to internet if direct internet access is enabled
 resource "aws_vpc_security_group_egress_rule" "internet" {
   count = var.create_security_group && var.direct_internet_access == "Enabled" ? 1 : 0

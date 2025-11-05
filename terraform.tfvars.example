@@ -13,8 +13,16 @@ direct_internet_access = "Disabled"       # Set to Disabled for private subnets
 
 # Network Configuration (REQUIRED)
 vpc_id         = "vpc-12345678"
-subnet_id      = "subnet-12345678"  # Use a private subnet
+subnet_id      = "subnet-12345678"  # Use a private subnet (SageMaker notebooks only support single subnet)
 vpc_cidr_block = "10.0.0.0/16"      # Your VPC CIDR
+
+# VPC Endpoints Configuration (Optional but recommended for HA)
+# Deploy VPC endpoints across multiple subnets for high availability
+vpc_endpoint_subnet_ids = [
+  "subnet-12345678",  # us-east-1a (same as notebook)
+  "subnet-23456789",  # us-east-1b (different AZ)
+  "subnet-34567890"   # us-east-1c (another AZ)
+]
 
 # Security Group Configuration
 create_security_group      = true
@@ -41,10 +49,34 @@ s3_bucket_arns = [
   "arn:aws:s3:::my-ml-models-bucket"
 ]
 
+# ECR Repositories for Docker image push/pull
+ecr_repository_arns = null  # null = all ECR repos in your account
+# ecr_repository_arns = [
+#   "arn:aws:ecr:us-east-1:123456789012:repository/my-ml-app",
+#   "arn:aws:ecr:us-east-1:123456789012:repository/my-training-image"
+# ]
+
 # Additional IAM policies to attach
 additional_iam_policies = [
   # "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
 ]
+
+# Git Access Configuration
+enable_git_access = true  # Enable Git/CodeCommit access
+enable_git_ssh    = false # Enable SSH for Git (usually HTTPS is sufficient)
+
+# Specific CodeCommit repositories (optional, null = all repos)
+codecommit_repository_arns = null
+# codecommit_repository_arns = [
+#   "arn:aws:codecommit:us-east-1:123456789012:my-repo"
+# ]
+
+# Secrets Manager for Git credentials (optional, null = auto-detect *git* secrets)
+enable_secrets_manager_access = true
+secrets_manager_secret_arns   = null
+# secrets_manager_secret_arns = [
+#   "arn:aws:secretsmanager:us-east-1:123456789012:secret:github-token-xxx"
+# ]
 
 # Encryption (optional)
 kms_key_id = null  # ARN of KMS key for EBS volume encryption

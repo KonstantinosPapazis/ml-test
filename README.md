@@ -7,10 +7,10 @@ This Terraform configuration provides a complete, production-ready deployment of
 - ✅ **Complete IAM Role Configuration** - Includes all necessary permissions for SageMaker operations
 - ✅ **Private Subnet Support** - Designed for deployment in private subnets with VPC endpoints
 - ✅ **Security Groups** - Pre-configured security groups with all necessary rules
+- ✅ **Git Integration** - Full support for GitHub, GitLab, Bitbucket, and AWS CodeCommit (see [GIT_SETUP.md](GIT_SETUP.md))
 - ✅ **Encryption Support** - Optional KMS encryption for EBS volumes
 - ✅ **CloudWatch Logs** - Integrated logging and monitoring
 - ✅ **Lifecycle Configuration** - Support for custom startup scripts
-- ✅ **Git Integration** - Connect to code repositories
 - ✅ **Fully Parameterized** - All options are configurable via variables
 - ✅ **Production Best Practices** - Follows AWS best practices for security and operations
 
@@ -19,8 +19,8 @@ This Terraform configuration provides a complete, production-ready deployment of
 This module creates the following resources:
 
 1. **SageMaker Notebook Instance** - The main ML development environment
-2. **IAM Role** - With policies for SageMaker, S3, ECR, CloudWatch, VPC, and KMS
-3. **Security Group** - With rules for private subnet communication and VPC endpoints
+2. **IAM Role** - With policies for SageMaker, S3, ECR, CloudWatch, VPC, KMS, Git (CodeCommit), and Secrets Manager
+3. **Security Group** - With rules for private subnet communication, VPC endpoints, and Git access
 4. **CloudWatch Log Group** - For notebook instance logs
 5. **Lifecycle Configuration** (optional) - For custom initialization scripts
 
@@ -538,12 +538,38 @@ terraform destroy
 
 **Warning**: This will delete the notebook instance and all local data. Ensure important data is saved to S3.
 
+## Git Repository Access
+
+This module includes full support for Git integration. See [GIT_SETUP.md](GIT_SETUP.md) for detailed instructions on:
+
+- Cloning public and private repositories
+- AWS CodeCommit integration
+- GitHub/GitLab authentication with Secrets Manager
+- SSH vs HTTPS configuration
+- Automatic repository cloning on notebook start
+
+**Quick Start:**
+```hcl
+# In terraform.tfvars:
+enable_git_access = true  # Already enabled by default!
+default_code_repository = "https://github.com/username/repo-name"
+```
+
 ## Support and Contributions
 
 For issues, questions, or contributions:
 - Review AWS SageMaker documentation
 - Check Terraform AWS provider documentation
 - Review CloudWatch logs for debugging
+- See [GIT_SETUP.md](GIT_SETUP.md) for Git-related issues
+
+## Documentation
+
+- **[README.md](README.md)** - This file, comprehensive module documentation
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick command reference
+- **[GIT_SETUP.md](GIT_SETUP.md)** - Git repository integration guide
+- **[vpc_endpoints_example.tf](vpc_endpoints_example.tf)** - VPC endpoints configuration example
 
 ## License
 
