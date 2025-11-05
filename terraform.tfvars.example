@@ -27,8 +27,12 @@ vpc_endpoint_subnet_ids = [
 # Security Group Configuration
 create_security_group      = true
 security_group_name        = null  # Optional, will be auto-generated if not provided
-allowed_cidr_blocks        = ["10.0.0.0/16"]  # CIDRs allowed to access the notebook
-allowed_security_group_ids = []  # Additional security groups allowed to access
+
+# CIDR blocks allowed to access the notebook (e.g., your VPC CIDR for internal access)
+allowed_cidr_blocks = ["10.0.0.0/16"]
+
+# Additional security groups allowed to access the notebook
+allowed_security_group_ids = []
 
 # Additional security groups to attach (if you have existing ones)
 additional_security_group_ids = []

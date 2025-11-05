@@ -143,19 +143,6 @@ resource "aws_vpc_security_group_ingress_rule" "security_groups" {
   referenced_security_group_id = var.allowed_security_group_ids[count.index]
 }
 
-# Ingress rule: Allow traffic from VPC CIDR (for internal communication)
-resource "aws_vpc_security_group_ingress_rule" "vpc_internal" {
-  count = var.create_security_group ? 1 : 0
-
-  security_group_id = aws_security_group.sagemaker_notebook[0].id
-  description       = "Allow internal VPC communication"
-
-  ip_protocol = "tcp"
-  from_port   = 443
-  to_port     = 443
-  cidr_ipv4   = var.vpc_cidr_block
-}
-
 # Self-referencing rule: Allow communication between instances in the same security group
 resource "aws_vpc_security_group_ingress_rule" "self" {
   count = var.create_security_group ? 1 : 0
