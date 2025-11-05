@@ -1,0 +1,106 @@
+# AWS Configuration
+aws_region   = "us-east-1"
+project_name = "my-ml-project"
+environment  = "dev"
+
+# SageMaker Notebook Configuration
+notebook_name         = "my-ml-notebook"  # Optional, will be auto-generated if not provided
+instance_type         = "ml.t3.medium"    # Options: ml.t2.medium, ml.t3.medium, ml.m5.xlarge, etc.
+volume_size           = 10                # GB, minimum 5
+platform_identifier   = "notebook-al2-v2" # Options: notebook-al2-v2, notebook-al1-v1
+root_access           = "Disabled"        # Options: Enabled, Disabled
+direct_internet_access = "Disabled"       # Set to Disabled for private subnets
+
+# Network Configuration (REQUIRED)
+vpc_id         = "vpc-12345678"
+subnet_id      = "subnet-12345678"  # Use a private subnet
+vpc_cidr_block = "10.0.0.0/16"      # Your VPC CIDR
+
+# Security Group Configuration
+create_security_group      = true
+security_group_name        = null  # Optional, will be auto-generated if not provided
+allowed_cidr_blocks        = ["10.0.0.0/16"]  # CIDRs allowed to access the notebook
+allowed_security_group_ids = []  # Additional security groups allowed to access
+
+# Additional security groups to attach (if you have existing ones)
+additional_security_group_ids = []
+
+# VPC Endpoints (recommended for private subnets)
+enable_s3_vpc_endpoint                  = true
+enable_sagemaker_api_vpc_endpoint       = true
+enable_sagemaker_runtime_vpc_endpoint   = true
+
+# IAM Configuration
+create_iam_role               = true
+iam_role_name                 = null  # Optional, will be auto-generated if not provided
+iam_role_permissions_boundary = null  # ARN of permissions boundary if required
+
+# S3 Buckets the notebook needs access to
+s3_bucket_arns = [
+  "arn:aws:s3:::my-ml-data-bucket",
+  "arn:aws:s3:::my-ml-models-bucket"
+]
+
+# Additional IAM policies to attach
+additional_iam_policies = [
+  # "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+]
+
+# Encryption (optional)
+kms_key_id = null  # ARN of KMS key for EBS volume encryption
+
+# Lifecycle Configuration (optional)
+create_lifecycle_config = false
+lifecycle_config_name   = null
+
+# Example lifecycle scripts (must be base64 encoded):
+# lifecycle_config_on_create = base64encode(<<-EOF
+#   #!/bin/bash
+#   set -e
+#   # Install additional packages
+#   sudo yum update -y
+#   sudo yum install -y htop
+# EOF
+# )
+
+# lifecycle_config_on_start = base64encode(<<-EOF
+#   #!/bin/bash
+#   set -e
+#   # Run on every notebook start
+#   echo "Notebook started at $(date)"
+# EOF
+# )
+
+# Code Repository (optional)
+default_code_repository      = null  # Git repository URL
+additional_code_repositories = []
+
+# CloudWatch Logs
+enable_cloudwatch_logs           = true
+cloudwatch_logs_retention_days   = 30
+
+# Instance Metadata Service
+instance_metadata_service_configuration = {
+  minimum_instance_metadata_service_version = "2"  # Use IMDSv2
+}
+
+# Tags
+default_tags = {
+  Project     = "ML Project"
+  ManagedBy   = "Terraform"
+  Owner       = "Data Science Team"
+  CostCenter  = "ML-001"
+}
+
+notebook_tags = {
+  Purpose = "Machine Learning Development"
+}
+
+security_group_tags = {
+  Type = "SageMaker Notebook Security Group"
+}
+
+iam_role_tags = {
+  Type = "SageMaker Notebook IAM Role"
+}
+
