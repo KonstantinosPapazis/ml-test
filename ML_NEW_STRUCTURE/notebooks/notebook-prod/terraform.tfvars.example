@@ -1,0 +1,56 @@
+# AWS Configuration
+aws_region = "us-east-1"
+
+# Project Configuration
+project_name = "ml-project"
+environment  = "prod"
+
+# Notebook Configuration
+notebook_name = null  # Auto-generated: ml-project-prod-notebook
+instance_type = "ml.m5.xlarge"  # Larger instance for production
+volume_size   = 50              # More storage for production data
+root_access   = "Disabled"      # Restricted for production security
+
+# Network Configuration
+direct_internet_access = "Disabled"  # Use VPC endpoints
+subnet_id              = "subnet-0123456789abcdef0"  # Private subnet
+
+# Security Group IDs (from shared-infra/security-groups)
+# Get from: cd ../../shared-infra/security-groups && terraform output notebook_security_group_id
+security_group_ids = [
+  "sg-0123456789abcdef0"
+]
+
+# IAM Role ARN (from shared-infra/iam)
+# Get from: cd ../../shared-infra/iam && terraform output iam_role_arn
+iam_role_arn = "arn:aws:iam::123456789012:role/sagemaker-notebooks-shared-role"
+
+# Optional: KMS Encryption for production
+# kms_key_id = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
+# Optional: Lifecycle Configuration
+# create_lifecycle_config = true
+# lifecycle_config_on_start = base64encode(<<-EOF
+#   #!/bin/bash
+#   set -e
+#   echo "Production notebook started at $(date)"
+#   # Add production-specific startup scripts
+# EOF
+# )
+
+# Optional: Git Repository
+# default_code_repository = "https://github.com/yourorg/ml-notebooks-prod"
+
+# Monitoring (longer retention for production)
+enable_cloudwatch_logs         = true
+cloudwatch_logs_retention_days = 90
+
+# Tags
+common_tags = {
+  Project     = "ML Project"
+  Environment = "Production"
+  Owner       = "Data Science Team"
+  ManagedBy   = "Terraform"
+  Compliance  = "Required"
+}
+

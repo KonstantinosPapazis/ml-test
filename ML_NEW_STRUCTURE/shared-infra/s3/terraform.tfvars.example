@@ -1,0 +1,24 @@
+# AWS Region
+aws_region = "us-east-1"
+
+# S3 Bucket Names (must be globally unique)
+datasets_bucket_name = "my-company-ml-datasets"
+models_bucket_name   = "my-company-ml-models"
+
+# Versioning (recommended for data protection)
+enable_versioning = true
+
+# Lifecycle Policies (recommended for cost optimization)
+enable_lifecycle_policies = true
+
+# Optional: KMS Key for encryption
+# kms_key_id = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
+# Common Tags
+common_tags = {
+  Project     = "ML Infrastructure"
+  Environment = "Shared"
+  ManagedBy   = "Terraform"
+  Team        = "Data Science"
+}
+

@@ -1,0 +1,39 @@
+# AWS Region
+aws_region = "us-east-1"
+
+# VPC Configuration
+vpc_id = "vpc-0123456789abcdef0"
+
+# Subnet IDs for interface endpoints (use multiple for HA)
+subnet_ids = [
+  "subnet-0123456789abcdef0",
+  "subnet-0123456789abcdef1"
+]
+
+# Route table IDs for S3 gateway endpoint
+route_table_ids = [
+  "rtb-0123456789abcdef0"
+]
+
+# Security group IDs (from shared-infra/security-groups)
+# Get from: cd ../security-groups && terraform output vpc_endpoint_security_group_id
+security_group_ids = [
+  "sg-0123456789abcdef0"
+]
+
+# Which endpoints to create
+create_s3_endpoint                = true   # Free
+create_sagemaker_api_endpoint     = true   # $0.01/hour
+create_sagemaker_runtime_endpoint = true   # $0.01/hour
+create_ec2_endpoint               = true   # $0.01/hour
+create_logs_endpoint              = false  # $0.01/hour (optional)
+create_ecr_endpoints              = false  # $0.01/hour each (optional)
+
+# Common Tags
+common_tags = {
+  Project     = "ML Infrastructure"
+  Environment = "Shared"
+  ManagedBy   = "Terraform"
+  Team        = "Data Science"
+}
+

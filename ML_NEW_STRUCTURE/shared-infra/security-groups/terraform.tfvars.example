@@ -1,0 +1,22 @@
+# AWS Region
+aws_region = "us-east-1"
+
+# VPC Configuration
+vpc_id         = "vpc-0123456789abcdef0"
+vpc_cidr_block = "10.0.0.0/16"
+
+# Security Group Names
+notebook_sg_name      = "sagemaker-notebooks-sg"
+vpc_endpoint_sg_name  = "sagemaker-vpc-endpoints-sg"
+
+# Create VPC Endpoint Security Group
+create_vpc_endpoint_sg = true
+
+# Common Tags
+common_tags = {
+  Project     = "ML Infrastructure"
+  Environment = "Shared"
+  ManagedBy   = "Terraform"
+  Team        = "Data Science"
+}
+
