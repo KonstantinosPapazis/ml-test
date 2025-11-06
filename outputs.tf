@@ -73,3 +73,39 @@ output "network_interface_id" {
   value       = aws_sagemaker_notebook_instance.this.network_interface_id
 }
 
+# S3 Bucket Outputs
+output "datasets_bucket_name" {
+  description = "Name of the datasets S3 bucket"
+  value       = var.create_datasets_bucket ? aws_s3_bucket.datasets[0].id : null
+}
+
+output "datasets_bucket_arn" {
+  description = "ARN of the datasets S3 bucket"
+  value       = var.create_datasets_bucket ? aws_s3_bucket.datasets[0].arn : null
+}
+
+output "datasets_bucket_regional_domain_name" {
+  description = "Regional domain name of the datasets S3 bucket"
+  value       = var.create_datasets_bucket ? aws_s3_bucket.datasets[0].bucket_regional_domain_name : null
+}
+
+output "models_bucket_name" {
+  description = "Name of the models S3 bucket"
+  value       = var.create_models_bucket ? aws_s3_bucket.models[0].id : null
+}
+
+output "models_bucket_arn" {
+  description = "ARN of the models S3 bucket"
+  value       = var.create_models_bucket ? aws_s3_bucket.models[0].arn : null
+}
+
+output "models_bucket_regional_domain_name" {
+  description = "Regional domain name of the models S3 bucket"
+  value       = var.create_models_bucket ? aws_s3_bucket.models[0].bucket_regional_domain_name : null
+}
+
+output "all_s3_bucket_arns" {
+  description = "All S3 bucket ARNs accessible by the notebook instance"
+  value       = local.all_s3_bucket_arns
+}
+

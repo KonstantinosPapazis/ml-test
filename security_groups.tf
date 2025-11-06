@@ -49,10 +49,10 @@ resource "aws_vpc_security_group_egress_rule" "s3_prefix_list" {
   security_group_id = aws_security_group.sagemaker_notebook[0].id
   description       = "Allow access to S3 via prefix list"
 
-  ip_protocol       = "tcp"
-  from_port         = 443
-  to_port           = 443
-  prefix_list_id    = data.aws_ec2_managed_prefix_list.s3[0].id
+  ip_protocol    = "tcp"
+  from_port      = 443
+  to_port        = 443
+  prefix_list_id = data.aws_ec2_managed_prefix_list.s3[0].id
 }
 
 # Egress rule: Allow DNS resolution

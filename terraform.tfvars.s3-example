@@ -1,0 +1,94 @@
+# Example Terraform Variables for SageMaker Notebook with S3 Buckets
+# Copy this file to terraform.tfvars and customize for your environment
+
+# Basic Configuration
+project_name = "ml-project"
+environment  = "dev"
+aws_region   = "us-east-1"
+
+# Network Configuration (replace with your actual VPC/subnet IDs)
+vpc_id          = "vpc-0123456789abcdef0"
+subnet_id       = "subnet-0123456789abcdef0"
+vpc_cidr_block  = "10.0.0.0/16"
+
+# SageMaker Notebook Configuration
+instance_type = "ml.t3.medium"  # or ml.t3.large, ml.t3.xlarge for more power
+volume_size   = 20              # GB of EBS storage
+root_access   = "Enabled"       # Enable for pip installs and system packages
+
+# S3 Buckets Configuration
+create_datasets_bucket = true
+create_models_bucket   = true
+
+# Optional: Custom bucket names (if not provided, auto-generated as project-environment-datasets/models)
+# datasets_bucket_name = "my-company-ml-datasets"
+# models_bucket_name   = "my-company-ml-models"
+
+# S3 Bucket Features
+enable_datasets_bucket_versioning = true  # Recommended: protects against accidental deletion
+enable_models_bucket_versioning   = true  # Recommended: track model versions
+
+# Lifecycle policies for cost optimization
+enable_datasets_bucket_lifecycle = true
+
+# Customize lifecycle rules (optional)
+datasets_bucket_lifecycle_rules = {
+  archive_old_versions = {
+    enabled         = true
+    transition_days = 30        # Move old versions to Glacier after 30 days
+    storage_class   = "GLACIER"
+  }
+  delete_old_versions = {
+    enabled        = true
+    expiration_days = 90        # Delete old versions after 90 days
+  }
+  transition_to_ia = {
+    enabled         = false     # Set to true to move infrequently accessed data to IA
+    transition_days = 90
+    prefix          = "archive/"
+  }
+}
+
+# Optional: Add additional S3 buckets (beyond the managed datasets/models buckets)
+# s3_bucket_arns = [
+#   "arn:aws:s3:::another-bucket-name",
+#   "arn:aws:s3:::yet-another-bucket"
+# ]
+
+# Optional: KMS encryption (if not provided, uses AES256)
+# datasets_bucket_kms_key_id = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+# models_bucket_kms_key_id   = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
+# Security Configuration
+create_security_group = true
+direct_internet_access = "Disabled"  # Recommended for security
+
+# IAM Configuration
+create_iam_role = true
+
+# Git Configuration (for code repositories)
+enable_git_access              = true
+enable_secrets_manager_access  = true
+
+# CloudWatch Logs
+enable_cloudwatch_logs         = true
+cloudwatch_logs_retention_days = 30
+
+# Tags
+default_tags = {
+  Project     = "ML Project"
+  Environment = "Development"
+  Team        = "Data Science"
+  CostCenter  = "ML-001"
+}
+
+# Additional bucket tags
+datasets_bucket_tags = {
+  DataClassification = "Confidential"
+  Compliance        = "GDPR"
+}
+
+models_bucket_tags = {
+  Purpose = "Production ML Models"
+}
+

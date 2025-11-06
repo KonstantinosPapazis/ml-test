@@ -5,10 +5,11 @@ This Terraform configuration provides a complete, production-ready deployment of
 ## Features
 
 - ✅ **Complete IAM Role Configuration** - Includes all necessary permissions for SageMaker operations
+- ✅ **Managed S3 Buckets** - Automatic creation of datasets and models buckets with versioning, encryption, and lifecycle policies (see [S3_USAGE_GUIDE.md](S3_USAGE_GUIDE.md))
 - ✅ **Private Subnet Support** - Designed for deployment in private subnets with VPC endpoints
 - ✅ **Security Groups** - Pre-configured security groups with all necessary rules
 - ✅ **Git Integration** - Full support for GitHub, GitLab, Bitbucket, and AWS CodeCommit (see [GIT_SETUP.md](GIT_SETUP.md))
-- ✅ **Encryption Support** - Optional KMS encryption for EBS volumes
+- ✅ **Encryption Support** - Optional KMS encryption for EBS volumes and S3 buckets
 - ✅ **CloudWatch Logs** - Integrated logging and monitoring
 - ✅ **Lifecycle Configuration** - Support for custom startup scripts
 - ✅ **Fully Parameterized** - All options are configurable via variables
@@ -19,10 +20,13 @@ This Terraform configuration provides a complete, production-ready deployment of
 This module creates the following resources:
 
 1. **SageMaker Notebook Instance** - The main ML development environment
-2. **IAM Role** - With policies for SageMaker, S3, ECR, CloudWatch, VPC, KMS, Git (CodeCommit), and Secrets Manager
-3. **Security Group** - With rules for private subnet communication, VPC endpoints, and Git access
-4. **CloudWatch Log Group** - For notebook instance logs
-5. **Lifecycle Configuration** (optional) - For custom initialization scripts
+2. **S3 Buckets** (optional, enabled by default):
+   - **Datasets Bucket** - For storing ML training/testing datasets with versioning and lifecycle policies
+   - **Models Bucket** - For storing trained model artifacts with versioning
+3. **IAM Role** - With policies for SageMaker, S3, ECR, CloudWatch, VPC, KMS, Git (CodeCommit), and Secrets Manager
+4. **Security Group** - With rules for private subnet communication, VPC endpoints, and Git access
+5. **CloudWatch Log Group** - For notebook instance logs
+6. **Lifecycle Configuration** (optional) - For custom initialization scripts
 
 ## Prerequisites
 
@@ -43,7 +47,11 @@ Before using this module, ensure you have:
 ### 1. Copy the Example Variables File
 
 ```bash
+# For basic setup
 cp terraform.tfvars.example terraform.tfvars
+
+# For setup with S3 buckets (recommended for ML workflows)
+cp terraform.tfvars.s3-example terraform.tfvars
 ```
 
 ### 2. Edit `terraform.tfvars`
@@ -59,9 +67,13 @@ vpc_id         = "vpc-xxxxxxxxx"
 subnet_id      = "subnet-xxxxxxxxx"  # Private subnet
 vpc_cidr_block = "10.0.0.0/16"
 
-# S3 buckets for data access
+# S3 buckets (automatically created by default)
+create_datasets_bucket = true
+create_models_bucket   = true
+
+# Optional: Provide additional external bucket access
 s3_bucket_arns = [
-  "arn:aws:s3:::my-ml-data-bucket"
+  "arn:aws:s3:::existing-data-bucket"
 ]
 ```
 
@@ -317,6 +329,107 @@ The IAM role created includes the following permissions:
 ### KMS Access (if KMS key is provided)
 - Encrypt/decrypt data using the specified KMS key
 
+## S3 Bucket Management
+
+The module automatically creates and manages S3 buckets for your ML workflows with production-ready configurations. See [S3_USAGE_GUIDE.md](S3_USAGE_GUIDE.md) for detailed usage instructions.
+
+### Managed Buckets
+
+#### Datasets Bucket
+- **Purpose**: Store training/testing datasets
+- **Features**: 
+  - Versioning enabled by default
+  - Lifecycle policies (archive old versions to Glacier after 30 days, delete after 90 days)
+  - Server-side encryption (AES256 or KMS)
+  - Public access blocked
+  - Automatic IAM permissions for notebook access
+
+#### Models Bucket
+- **Purpose**: Store trained model artifacts
+- **Features**:
+  - Versioning enabled by default
+  - Server-side encryption (AES256 or KMS)
+  - Public access blocked
+  - Automatic IAM permissions for notebook access
+
+### Configuration Options
+
+```hcl
+# Enable/disable bucket creation
+create_datasets_bucket = true  # Default: true
+create_models_bucket   = true  # Default: true
+
+# Custom bucket names (optional)
+datasets_bucket_name = "my-company-datasets"
+models_bucket_name   = "my-company-models"
+
+# Versioning
+enable_datasets_bucket_versioning = true
+enable_models_bucket_versioning   = true
+
+# KMS encryption (optional, uses AES256 if not provided)
+datasets_bucket_kms_key_id = "arn:aws:kms:..."
+models_bucket_kms_key_id   = "arn:aws:kms:..."
+
+# Lifecycle policies for cost optimization
+enable_datasets_bucket_lifecycle = true
+datasets_bucket_lifecycle_rules = {
+  archive_old_versions = {
+    enabled         = true
+    transition_days = 30
+    storage_class   = "GLACIER"
+  }
+  delete_old_versions = {
+    enabled        = true
+    expiration_days = 90
+  }
+  transition_to_ia = {
+    enabled         = false
+    transition_days = 90
+    prefix          = "archive/"
+  }
+}
+```
+
+### Using S3 Buckets from Notebooks
+
+After deployment, get your bucket names:
+
+```bash
+terraform output datasets_bucket_name
+terraform output models_bucket_name
+```
+
+Access from Python:
+
+```python
+import pandas as pd
+
+# Read data from S3 (using pandas)
+df = pd.read_csv('s3://your-project-dev-datasets/raw/dataset.csv')
+
+# Write data to S3
+df.to_parquet('s3://your-project-dev-datasets/processed/data.parquet')
+```
+
+See [S3_USAGE_GUIDE.md](S3_USAGE_GUIDE.md) for comprehensive examples including:
+- Boto3 usage
+- SageMaker SDK integration
+- Migrating data from Google Cloud Storage
+- Best practices and directory structure
+- Large dataset handling
+
+### Additional S3 Buckets
+
+You can grant access to additional external buckets:
+
+```hcl
+s3_bucket_arns = [
+  "arn:aws:s3:::existing-company-data",
+  "arn:aws:s3:::shared-datasets"
+]
+```
+
 ## Outputs
 
 The module provides the following outputs:
@@ -327,6 +440,13 @@ output "notebook_instance_name"  # Name of the notebook
 output "notebook_instance_arn"   # ARN of the notebook
 output "notebook_instance_url"   # URL to access the notebook
 output "notebook_instance_id"    # ID of the notebook
+
+# S3 bucket information
+output "datasets_bucket_name"    # Name of the datasets bucket
+output "datasets_bucket_arn"     # ARN of the datasets bucket
+output "models_bucket_name"      # Name of the models bucket
+output "models_bucket_arn"       # ARN of the models bucket
+output "all_s3_bucket_arns"      # All S3 bucket ARNs accessible
 
 # IAM information
 output "iam_role_arn"           # ARN of the IAM role
@@ -566,6 +686,7 @@ For issues, questions, or contributions:
 ## Documentation
 
 - **[README.md](README.md)** - This file, comprehensive module documentation
+- **[S3_USAGE_GUIDE.md](S3_USAGE_GUIDE.md)** - Complete guide for S3 datasets and models storage
 - **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick command reference
 - **[GIT_SETUP.md](GIT_SETUP.md)** - Git repository integration guide

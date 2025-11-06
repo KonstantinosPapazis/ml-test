@@ -34,7 +34,7 @@ resource "aws_iam_role" "sagemaker_notebook" {
 
 # Inline policy for S3 access
 resource "aws_iam_role_policy" "s3_access" {
-  count = var.create_iam_role && length(var.s3_bucket_arns) > 0 ? 1 : 0
+  count = var.create_iam_role && length(local.all_s3_bucket_arns) > 0 ? 1 : 0
 
   name = "${var.project_name}-${var.environment}-sagemaker-s3-access"
   role = aws_iam_role.sagemaker_notebook[0].id
@@ -54,8 +54,8 @@ resource "aws_iam_role_policy" "s3_access" {
           "s3:AbortMultipartUpload"
         ]
         Resource = flatten([
-          var.s3_bucket_arns,
-          [for bucket in var.s3_bucket_arns : "${bucket}/*"]
+          local.all_s3_bucket_arns,
+          [for bucket in local.all_s3_bucket_arns : "${bucket}/*"]
         ])
       }
     ]

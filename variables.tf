@@ -173,9 +173,113 @@ variable "additional_iam_policies" {
 }
 
 variable "s3_bucket_arns" {
-  description = "S3 bucket ARNs that the notebook instance needs access to"
+  description = "Additional S3 bucket ARNs that the notebook instance needs access to (beyond the managed datasets/models buckets)"
   type        = list(string)
   default     = []
+}
+
+# S3 Datasets Bucket Configuration
+variable "create_datasets_bucket" {
+  description = "Whether to create an S3 bucket for ML datasets"
+  type        = bool
+  default     = true
+}
+
+variable "datasets_bucket_name" {
+  description = "Name for the datasets S3 bucket (if not provided, will be auto-generated)"
+  type        = string
+  default     = null
+}
+
+variable "enable_datasets_bucket_versioning" {
+  description = "Whether to enable versioning for the datasets bucket"
+  type        = bool
+  default     = true
+}
+
+variable "datasets_bucket_kms_key_id" {
+  description = "KMS key ID for encrypting the datasets bucket (if null, uses AES256)"
+  type        = string
+  default     = null
+}
+
+variable "enable_datasets_bucket_lifecycle" {
+  description = "Whether to enable lifecycle policies for the datasets bucket"
+  type        = bool
+  default     = true
+}
+
+variable "datasets_bucket_lifecycle_rules" {
+  description = "Lifecycle rules for the datasets bucket"
+  type = object({
+    archive_old_versions = object({
+      enabled         = bool
+      transition_days = number
+      storage_class   = string
+    })
+    delete_old_versions = object({
+      enabled         = bool
+      expiration_days = number
+    })
+    transition_to_ia = object({
+      enabled         = bool
+      transition_days = number
+      prefix          = string
+    })
+  })
+  default = {
+    archive_old_versions = {
+      enabled         = true
+      transition_days = 30
+      storage_class   = "GLACIER"
+    }
+    delete_old_versions = {
+      enabled         = true
+      expiration_days = 90
+    }
+    transition_to_ia = {
+      enabled         = false
+      transition_days = 90
+      prefix          = "archive/"
+    }
+  }
+}
+
+variable "datasets_bucket_tags" {
+  description = "Additional tags for the datasets bucket"
+  type        = map(string)
+  default     = {}
+}
+
+# S3 Models Bucket Configuration
+variable "create_models_bucket" {
+  description = "Whether to create an S3 bucket for ML model artifacts"
+  type        = bool
+  default     = true
+}
+
+variable "models_bucket_name" {
+  description = "Name for the models S3 bucket (if not provided, will be auto-generated)"
+  type        = string
+  default     = null
+}
+
+variable "enable_models_bucket_versioning" {
+  description = "Whether to enable versioning for the models bucket"
+  type        = bool
+  default     = true
+}
+
+variable "models_bucket_kms_key_id" {
+  description = "KMS key ID for encrypting the models bucket (if null, uses AES256)"
+  type        = string
+  default     = null
+}
+
+variable "models_bucket_tags" {
+  description = "Additional tags for the models bucket"
+  type        = map(string)
+  default     = {}
 }
 
 variable "ecr_repository_arns" {

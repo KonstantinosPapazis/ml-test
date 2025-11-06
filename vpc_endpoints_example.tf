@@ -12,7 +12,7 @@
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${var.aws_region}.s3"
-  
+
   # Associate with route tables of private subnets
   route_table_ids = [
     # Add your private subnet route table IDs here
@@ -86,14 +86,14 @@ resource "aws_vpc_security_group_egress_rule" "vpc_endpoints_all" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "sagemaker_api" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.sagemaker.api"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.sagemaker.api"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   # If vpc_endpoint_subnet_ids is not specified, use the notebook subnet
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -112,13 +112,13 @@ resource "aws_vpc_endpoint" "sagemaker_api" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "sagemaker_runtime" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.sagemaker.runtime"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.sagemaker.runtime"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -137,13 +137,13 @@ resource "aws_vpc_endpoint" "sagemaker_runtime" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "ec2" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ec2"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.ec2"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -162,13 +162,13 @@ resource "aws_vpc_endpoint" "ec2" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "logs" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.logs"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.logs"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -187,13 +187,13 @@ resource "aws_vpc_endpoint" "logs" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "ecr_api" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ecr.api"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.ecr.api"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -212,13 +212,13 @@ resource "aws_vpc_endpoint" "ecr_api" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "ecr_dkr" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.ecr.dkr"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -237,13 +237,13 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 # ============================================================================
 
 resource "aws_vpc_endpoint" "sts" {
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.sts"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.sts"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
@@ -264,13 +264,13 @@ resource "aws_vpc_endpoint" "sts" {
 resource "aws_vpc_endpoint" "kms" {
   count = var.kms_key_id != null ? 1 : 0
 
-  vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${var.aws_region}.kms"
-  vpc_endpoint_type   = "Interface"
-  
+  vpc_id            = var.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.kms"
+  vpc_endpoint_type = "Interface"
+
   # Use multiple subnets across AZs for high availability
   subnet_ids = length(var.vpc_endpoint_subnet_ids) > 0 ? var.vpc_endpoint_subnet_ids : [var.subnet_id]
-  
+
   security_group_ids  = [aws_security_group.vpc_endpoints.id]
   private_dns_enabled = true
 
